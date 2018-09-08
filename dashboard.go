@@ -1,44 +1,70 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-type datast struct {
-	Id   byte
-	Name string
-	Age  int
-}
-
 func main() {
-	jack := datast{
-		12,
-		"jack",
-		23,
-	}
-	fmt.Print(jack.Name)
-	t := template.New("index")
-	template.Must(t.ParseFiles("temp/sign-in.html", "temp/index.html", "temp/data-visualization.html", "temp/maps.html", "temp/tables.html", "temp/preferences.html"))
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.HandleFunc("/index.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "index.html", &jack)
+
+	r := gin.Default()
+	r.Static("/static", "./static")
+	r.LoadHTMLGlob("temp/*")
+
+	r.GET("/", func(c *gin.Context) {
+		c.Request.URL.Path = "/sign-in.html"
+		r.HandleContext(c)
 	})
-	http.HandleFunc("/sign-in.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "sign-in.html", &jack)
+
+	r.GET("/index.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "KDT Console",
+			"logo":  "Dashboard",
+		})
 	})
-	http.HandleFunc("/data-visualization.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "data-visualization.html", &jack)
+
+	r.GET("/sign-in.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "sign-in.html", gin.H{
+			"title": "Sign In",
+			"logo":  "Sign In",
+		})
 	})
-	http.HandleFunc("/maps.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "maps.html", &jack)
+
+	r.GET("/data-visualization.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "data-visualization.html", gin.H{
+			"title": "Data",
+			"logo":  "Data",
+		})
 	})
-	http.HandleFunc("/tables.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "tables.html", &jack)
+
+	r.GET("/maps.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "maps.html", gin.H{
+			"title": "Maps",
+			"logo":  "Maps",
+		})
 	})
-	http.HandleFunc("/preferences.html", func(rw http.ResponseWriter, r *http.Request) {
-		t.ExecuteTemplate(rw, "preferences.html", &jack)
+
+	r.GET("/preferences.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "preferences.html", gin.H{
+			"title": "Preferences",
+			"logo":  "Preferences",
+		})
 	})
-	http.ListenAndServe(":8080", nil)
+
+	r.GET("/tables.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "tables.html", gin.H{
+			"title": "Tables",
+			"logo":  "Tables",
+		})
+	})
+
+	r.GET("/car_index.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "car_index.html", gin.H{
+			"title": "Car Data",
+			"logo":  "Car Data",
+		})
+	})
+
+	r.Run(":8080")
 }
