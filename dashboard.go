@@ -1,70 +1,103 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+type dataRoute struct {
+	routeval string
+	name     string
+}
+
+type vehicle struct {
+	Index      int
+	Dtime      string
+	Vehiclesta string
+	Chargesta  string
+	Runmod     string
+	Speed      int
+	Mile       int
+	Vol        int
+	Cur        int
+	Soc        int
+	Dcdcsta    string
+	Gear       string
+	Ins        int
+	Acc        int
+	Brake      int
+}
+
+type Student struct {
+	Name    string
+	Age     int
+	Guake   bool
+	Classes []string
+	Price   float32
+}
+
+func datainit() []vehicle {
+	var datalist = make([]vehicle, 0)
+	item := vehicle{
+		1,
+		"2018-09-08 11:00:00",
+		"熄火",
+		"停车充电",
+		"无效",
+		80,
+		100,
+		10,
+		26,
+		70,
+		"工作",
+		"P档",
+		100,
+		30,
+		20}
+	datalist = append(datalist, item)
+	return datalist
+}
+
 func main() {
 
+	st := &Student{
+		"Xiao Ming",
+		16,
+		true,
+		[]string{"Math", "English", "Chinese"},
+		9.99,
+	}
+
+	datalist := datainit()
+
+	jsonData, _ := json.Marshal(datalist)
+
+	fmt.Println(string(jsonData))
+
+	testData, _ := json.Marshal(st)
+	fmt.Println(string(testData))
+
 	r := gin.Default()
-	r.Static("/static", "./static")
-	r.LoadHTMLGlob("temp/*")
+	r.Static("/css", "Lorvens/css")
+	r.Static("/charts", "Lorvens/charts")
+	r.Static("/fonts", "Lorvens/fonts")
+	r.Static("/images", "Lorvens/images")
+	r.Static("/js", "Lorvens/js")
+	r.LoadHTMLGlob("Lorvens/temp/*html")
 
 	r.GET("/", func(c *gin.Context) {
-		c.Request.URL.Path = "/sign-in.html"
-		r.HandleContext(c)
-	})
-
-	r.GET("/index.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
+		c.HTML(http.StatusOK, "vehicle.html", gin.H{
 			"title": "KDT Console",
 			"logo":  "Dashboard",
 		})
 	})
 
-	r.GET("/sign-in.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "sign-in.html", gin.H{
-			"title": "Sign In",
-			"logo":  "Sign In",
-		})
+	r.GET("/data", func(c *gin.Context) {
+		c.JSON(http.StatusOK, string(jsonData))
 	})
 
-	r.GET("/data-visualization.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "data-visualization.html", gin.H{
-			"title": "Data",
-			"logo":  "Data",
-		})
-	})
-
-	r.GET("/maps.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "maps.html", gin.H{
-			"title": "Maps",
-			"logo":  "Maps",
-		})
-	})
-
-	r.GET("/preferences.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "preferences.html", gin.H{
-			"title": "Preferences",
-			"logo":  "Preferences",
-		})
-	})
-
-	r.GET("/tables.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "tables.html", gin.H{
-			"title": "Tables",
-			"logo":  "Tables",
-		})
-	})
-
-	r.GET("/car_index.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "car_index.html", gin.H{
-			"title": "Car Data",
-			"logo":  "Car Data",
-		})
-	})
-
-	r.Run(":8080")
+	r.Run(":8081")
 }
